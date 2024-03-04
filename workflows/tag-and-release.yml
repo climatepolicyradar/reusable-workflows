@@ -1,0 +1,32 @@
+name: Final
+
+on:
+  workflow_run:
+    workflows: ["Trigger"]
+    types:
+      - completed
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Tag debug
+      run: |
+          echo ${{ github.event_name }}
+          echo ${{ github.ref }}
+
+
+  release:
+    needs: tag
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Release Debug
+      run: |
+          echo ${{ github.event_name }}
+          echo ${{ github.ref }}
