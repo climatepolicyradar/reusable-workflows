@@ -22,6 +22,7 @@ jobs:
           echo ${{ github.ref }}
           echo ${{ github.event.pull_request.head.ref }}
           echo ${{ github.event.pull_request.base.ref }}
+          echo ${{ github.event }}
 
       - name: Dump GitHub context
         env:
@@ -35,7 +36,3 @@ jobs:
         env:
           STEPS_CONTEXT: ${{ toJson(steps) }}
         run: echo "$STEPS_CONTEXT"
-      - name: Dump runner context
-        env:
-          RUNNER_CONTEXT: ${{ toJson(runner) }}
-        run: echo "$RUNNER_CONTEXT"
