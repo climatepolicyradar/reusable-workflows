@@ -6,7 +6,7 @@ on:
       repo-name:
         required: true
         type: string
-      tag:
+      semver-tag:
         required: true
         type: string
 
@@ -62,6 +62,6 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          docker pull ${DOCKER_REGISTRY}/${{ inputs.repo-name }}:${{ inputs.tag }}
-          docker tag ${DOCKER_REGISTRY}/${{ inputs.repo-name }}:${{ inputs.tag }}  ${{ inputs.repo-name }}:${{ inputs.tag }}
-          .github/retag-and-push.sh ${{ inputs.repo-name }} ${{ inputs.tag }}
+          docker pull ${DOCKER_REGISTRY}/${{ inputs.repo-name }}:${{ inputs.semver-tag }}
+          docker tag ${DOCKER_REGISTRY}/${{ inputs.repo-name }}:${{ inputs.semver-tag }}  ${{ inputs.repo-name }}:${{ inputs.semver-tag }}
+          .github/retag-and-push.sh ${{ inputs.repo-name }} ${{ inputs.semver-tag }}
