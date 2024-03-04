@@ -7,10 +7,6 @@ on:
         required: true
         type: string
 
-    secrets:
-      GITHUB_TOKEN:
-        required: true
-
 jobs:
   auto-release:
     if: ${{ github.ref == 'refs/heads/main' }}
