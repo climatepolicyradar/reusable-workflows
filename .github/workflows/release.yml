@@ -1,21 +1,23 @@
-name: Trigger
+name: Auto-Release
 
 on:
-  push:
-    tags: ['v*']
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+  workflow_call:
+    inputs:
+      new_tag:
+        required: true
+        type: string
 
-# https://github.com/marketplace/actions/docker-layer-caching
+    secrets:
+      GITHUB_TOKEN:
+        required: true
+
 jobs:
-  debug:
+  auto-release:
+    if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
-
       - name: Debug
         run: |
           echo ${{ github.event_name }}
@@ -36,3 +38,12 @@ jobs:
         env:
           STEPS_CONTEXT: ${{ toJson(steps) }}
         run: echo "$STEPS_CONTEXT"
+
+      - name: Create Git release
+        uses: ncipollo/release-action@v1.14.0
+        with:
+          token: "${{ secrets.GITHUB_TOKEN }}"
+          generateReleaseNotes: true
+          makeLatest: true
+          prerelease: false
+          tag: ${{ inputs.new_tag }}
