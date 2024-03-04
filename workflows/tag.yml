@@ -77,13 +77,6 @@ jobs:
           docker tag ${DOCKER_REGISTRY}/${{ inputs.repo-name }}:main-${GITHUB_SHA::8}  ${{ inputs.repo-name }}:main-${GITHUB_SHA::8}
           .github/retag-and-push.sh ${{ inputs.repo-name }} main-${GITHUB_SHA::8}
 
-      # - name: Create and push Git tag
-      #   run: |
-      #     new_tag=${{ steps.determine_next_tag.outputs.new_tag }}
-      #     new_version_num=${new_tag#v}
-      #     git tag -a "${new_tag}" -m "Version ${new_version_num}"
-      #     git push --tags origin "${new_tag}"
-
   semver-for-manually-created-tags:
     if: ${{ startsWith(github.ref, 'refs/tags/') }}
     runs-on: ubuntu-latest
