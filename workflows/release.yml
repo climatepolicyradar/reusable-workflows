@@ -1,0 +1,28 @@
+name: Auto-Release
+
+on:
+  workflow_call:
+    inputs:
+      new_tag:
+        required: true
+        type: string
+
+    secrets:
+      GITHUB_TOKEN:
+        required: true
+
+jobs:
+  auto-release:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create Git release
+        uses: ncipollo/release-action@v1.14.0
+        with:
+          token: "${{ secrets.GITHUB_TOKEN }}"
+          generateReleaseNotes: true
+          makeLatest: true
+          prerelease: false
+          tag: ${{ inputs.new_tag }}
