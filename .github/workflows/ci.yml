@@ -1,0 +1,24 @@
+name: Trigger
+
+on:
+  push:
+    tags: ['v*']
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+# https://github.com/marketplace/actions/docker-layer-caching
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Debug
+        run: |
+          echo ${{ github.event_name }}
+          echo ${{ github.ref }}
+          echo ${{ github.event.pull_request.head.ref }}
+          echo ${{ github.event.pull_request.base.ref }}
