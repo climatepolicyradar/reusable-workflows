@@ -9,6 +9,9 @@ on:
       semver-tag:
         required: true
         type: string
+      new-version:
+        required: false
+        type: string
 
     secrets:
       AWS_ACCESS_KEY_ID:
@@ -56,8 +59,20 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Docker pull, retag and push
+      - name: Docker pull, retag and push branch
         env:
+          DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          docker pull ${DOCKER_REGISTRY}/${{ inputs.repo-name }}:${{ inputs.semver-tag }}
+          docker tag ${DOCKER_REGISTRY}/${{ inputs.repo-name }}:${{ inputs.semver-tag }}  ${{ inputs.repo-name }}:${{ inputs.semver-tag }}
+          .github/retag-and-push.sh ${{ inputs.repo-name }} ${{ inputs.semver-tag }}
+
+      - name: Docker pull, retag and push tag
+        if: "${{ inputs.new-version != '' }}"
+        env:
+          NEW_TAG: ${{ inputs.new-version }}
           DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
