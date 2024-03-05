@@ -35,11 +35,4 @@ jobs:
           STEPS_CONTEXT: ${{ toJson(steps) }}
         run: echo "$STEPS_CONTEXT"
 
-      - name: Create Git release
-        uses: ncipollo/release-action@v1.14.0
-        with:
-          token: "${{ secrets.GITHUB_TOKEN }}"
-          generateReleaseNotes: true
-          makeLatest: true
-          prerelease: false
-          tag: ${{ inputs.new_tag }}
+
