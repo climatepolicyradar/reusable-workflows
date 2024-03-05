@@ -74,7 +74,7 @@ jobs:
           PR_NUMBER: "${{ fromJson(steps.get_pr_data.outputs.result).number }}"
         run: |
           echo "Attempting to auto-tag merge commit"
-          script_output=$(.github/auto-tag.sh "${PR_BODY}" "${PR_NUMBER}")
+          script_output=$("${{ github.action_path }}/.github/auto-tag.sh" "${PR_BODY}" "${PR_NUMBER}")
           if $? != 0; then
             exit 1
           fi
