@@ -19,7 +19,7 @@ on:
         required: true
 
 jobs:
-  auto-git-tag:
+  git:
     runs-on: ubuntu-latest
     if: ${{ github.ref == 'refs/heads/main' }}
 
@@ -82,8 +82,8 @@ jobs:
           echo "New tag: ${new_tag}"
           echo "new_tag=${new_tag}"  >> "$GITHUB_OUTPUT"
 
-  semver-for-auto-generated-tags:
-    needs: auto-git-tag
+  semver:
+    needs: git
     uses: climatepolicyradar/reusable-workflows/.github/workflows/semver.yml@main
     secrets: inherit
     with:
