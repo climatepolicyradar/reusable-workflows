@@ -10,6 +10,11 @@ on:
         required: true
         type: string
 
+    outputs:
+      new_tag:
+        description: The next determined tag based on the last PR body
+        value: ${{ jobs.git.outputs.new_tag }}
+
     secrets:
       AWS_ACCESS_KEY_ID:
         required: true
