@@ -34,6 +34,9 @@ jobs:
           echo ${{ github.event.pull_request.head.ref }}
           echo ${{ github.event.pull_request.base.ref }}
           echo ${{ github.event }}
+          echo ${{ inputs.repo-name }}
+          echo ${{ inputs.semver-tag }}
+          echo ${{ inputs.new-version }}
 
       - name: Dump GitHub context
         env:
@@ -60,6 +63,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Retag latest SHA and push to ECR
+        if: "${{ inputs.new-version == '' }}"
         id: retag_and_push_to_ecr
         uses: climatepolicyradar/retag-and-push-to-ecr@main
         env:
