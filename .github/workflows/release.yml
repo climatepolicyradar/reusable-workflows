@@ -14,15 +14,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Debug
-        run: |
-          echo ${{ github.event_name }}
-          echo ${{ github.ref }}
-          echo ${{ github.event.pull_request.head.ref }}
-          echo ${{ github.event.pull_request.base.ref }}
-          echo ${{ github.event }}
 
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
+      - name: Create Git release
+        uses: ncipollo/release-action@v1.14.0
+        with:
+          token: "${{ secrets.GITHUB_TOKEN }}"
+          generateReleaseNotes: true
+          makeLatest: true
+          prerelease: false
+          tag: ${{ inputs.new_tag }}
