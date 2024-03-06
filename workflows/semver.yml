@@ -59,24 +59,26 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Docker pull, retag and push branch
+      - name: Retag latest SHA and push to ECR
+        id: retag_and_push_to_ecr
+        uses: climatepolicyradar/retag-and-push-to-ecr@main
         env:
           DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: |
-          docker pull ${DOCKER_REGISTRY}/${{ inputs.repo-name }}:latest
-          docker tag ${DOCKER_REGISTRY}/${{ inputs.repo-name }}:latest  ${{ inputs.repo-name }}:${{ inputs.semver-tag }}
-          .github/retag-and-push.sh ${{ inputs.repo-name }} ${{ inputs.semver-tag }}
+        with:
+          repo-name: ${{ inputs.repo-name }}
+          semver-tag: ${{ inputs.semver-tag }}
 
-      - name: Docker pull, retag and push tag
+      - name: Retag latest SHA as new tag and push to ECR
         if: "${{ inputs.new-version != '' }}"
+        id: retag_and_push_to_ecr_new_tag
+        uses: climatepolicyradar/retag-and-push-to-ecr@main
         env:
-          NEW_TAG: ${{ inputs.new-version }}
           DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: |
-          docker pull ${DOCKER_REGISTRY}/${{ inputs.repo-name }}:latest
-          docker tag ${DOCKER_REGISTRY}/${{ inputs.repo-name }}:latest  ${{ inputs.repo-name }}:${{ inputs.semver-tag }}
-          .github/retag-and-push.sh ${{ inputs.repo-name }} ${{ inputs.semver-tag }}
+        with:
+          repo-name: ${{ inputs.repo-name }}
+          semver-tag: ${{ inputs.semver-tag }}
+          new-version: ${{ inputs.new-version }}
