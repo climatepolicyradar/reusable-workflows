@@ -3,8 +3,6 @@ name: Python Precommit Validator
 on:
   workflow_call
 
-permissions: read-all
-
 jobs:
   python-precommit-validator:
     runs-on: ubuntu-latest
