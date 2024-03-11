@@ -27,9 +27,7 @@ jobs:
           poetry install --only-root
 
       - name: Export PYTHONPATH
-        run: |
-          poetry show
-          echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
+        run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
 
       - name: Trunk Check
         uses: trunk-io/trunk-action@v1
