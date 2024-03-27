@@ -50,7 +50,7 @@ jobs:
 
   git:
     runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/main' }}
+    if: ${{ github.ref == 'refs/heads/main' && needs.determine-next.outputs.new_tag != 'Skip'}}
     permissions:
       contents: write
     needs:
