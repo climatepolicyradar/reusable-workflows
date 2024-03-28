@@ -66,6 +66,7 @@ jobs:
 
       - name: Create Git tag and push
         run: |
+          echo "Attempting to auto-tag merge commit"
           new_tag=${{ needs.determine-next.outputs.new_tag }}
           new_version_num=${new_tag#v}
           git tag -a "${new_tag}" -m "Version ${new_version_num}"
