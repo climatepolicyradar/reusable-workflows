@@ -41,7 +41,7 @@ jobs:
       - name: Retag latest SHA and push to ECR
         if: "${{ inputs.new-version == '' }}"
         id: retag_and_push_to_ecr
-        uses: climatepolicyradar/retag-and-push-to-ecr@main
+        uses: climatepolicyradar/retag-and-push-to-ecr@v1
         env:
           DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -53,7 +53,7 @@ jobs:
       - name: Retag latest SHA as new tag and push to ECR
         if: "${{ inputs.new-version != '' }}"
         id: retag_and_push_to_ecr_new_tag
-        uses: climatepolicyradar/retag-and-push-to-ecr@main
+        uses: climatepolicyradar/retag-and-push-to-ecr@v1
         env:
           DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
