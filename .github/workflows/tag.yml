@@ -45,7 +45,7 @@ jobs:
   semver:
     needs: determine-next
     if: ${{ github.ref == 'refs/heads/main' && needs.determine-next.outputs.new_tag != 'Skip'}}
-    uses: climatepolicyradar/reusable-workflows/.github/workflows/semver.yml@v2
+    uses: climatepolicyradar/reusable-workflows/.github/workflows/semver.yml@v3
     secrets: inherit
     with:
       repo-name: ${{ inputs.repo-name }}
