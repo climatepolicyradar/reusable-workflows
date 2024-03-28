@@ -34,6 +34,9 @@ jobs:
         with:
           arguments: --ci
 
+      - name: Check pyproject.toml package version matches
+        uses: climatepolicyradar/check-pyproject-package-version@main
+
       - name: Check code contains no FIXME's
         run: |
           git grep -r --no-color ${case_sensitive} --line-number -e "FIXME" :^.github
