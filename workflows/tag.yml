@@ -34,7 +34,7 @@ jobs:
     steps:
       - name: Determine new tag version
         id: determine_next_tag
-        uses: climatepolicyradar/get-next-tag-from-pr-body@main
+        uses: climatepolicyradar/get-next-tag-from-pr-body@v2
 
       - name: Next tag found?
         run: |
@@ -45,7 +45,7 @@ jobs:
   semver:
     needs: determine-next
     if: ${{ github.ref == 'refs/heads/main' && needs.determine-next.outputs.new_tag != 'Skip'}}
-    uses: climatepolicyradar/reusable-workflows/.github/workflows/semver.yml@main
+    uses: climatepolicyradar/reusable-workflows/.github/workflows/semver.yml@v1
     secrets: inherit
     with:
       repo-name: ${{ inputs.repo-name }}
