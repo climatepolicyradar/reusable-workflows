@@ -1,0 +1,65 @@
+name: Node Precommit Validator
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        required: true
+        type: string
+      package-manager:
+        default: yarn
+        required: false
+        type: string
+
+permissions: read-all
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    permissions:
+      # For trunk to post annotations
+      checks: write
+      # For repo checkout
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: ${{ inputs.package-manager }}
+
+      - name: Install dev dependencies
+        shell: bash
+        run: |
+          if [[ ${{ inputs.package-manager }} == yarn ]]; then
+            ${{ inputs.package-manager }} install --production=false
+          else
+            ${{ inputs.package-manager }} install
+          fi
+
+      - name: Run TypeScript type check
+        shell: bash
+        run: |
+          if [[ ${{ inputs.package-manager }} == yarn ]]; then
+            ${{ inputs.package-manager }} type-check
+          else
+            ${{ inputs.package-manager }} run type-check
+          fi
+
+      - name: Trunk Check
+        uses: trunk-io/trunk-action@v1
+        with:
+          arguments: --ci
+
+      - name: Check code contains no FIXME's
+        run: |
+          git grep -r --no-color ${case_sensitive} --line-number -e "FIXME" :^.github
+          if [[ $? -eq 0 ]]; then
+            # if we found any FIXME entries in checked in files, fail on main
+            exit 1
+          else
+            exit 0
+          fi
+        shell: bash {0}
