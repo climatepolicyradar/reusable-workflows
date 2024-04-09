@@ -15,7 +15,6 @@ on:
         description: The next determined tag based on the last PR body
         value: ${{ jobs.tag.outputs.new_tag }}
 
-permissions: read-all
 
 jobs:
   test:
