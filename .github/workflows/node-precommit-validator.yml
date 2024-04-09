@@ -11,8 +11,6 @@ on:
         required: false
         type: string
 
-permissions: read-all
-
 jobs:
   python:
     runs-on: ubuntu-latest
