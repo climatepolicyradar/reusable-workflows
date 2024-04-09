@@ -12,7 +12,7 @@ on:
         type: string
 
 jobs:
-  python:
+  node:
     runs-on: ubuntu-latest
     permissions:
       # For trunk to post annotations
