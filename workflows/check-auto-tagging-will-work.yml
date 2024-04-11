@@ -1,7 +1,11 @@
 name: Check auto-tagging will work
 
 on:
-  workflow_call
+  workflow_call:
+    outputs:
+      new_tag:
+        description: The next determined tag based on the last PR body
+        value: ${{ jobs.check-auto-tagging-will-work.outputs.new_tag }}
 
 permissions: read-all
 
@@ -9,6 +13,9 @@ jobs:
   check-auto-tagging-will-work:
     if: ${{ ! startsWith(github.ref, 'refs/tags') && ! startsWith(github.ref, 'refs/heads/main') }}
     runs-on: ubuntu-latest
+
+    outputs:
+      new_tag: ${{ steps.determine_next_tag.outputs.new_tag }}
 
     steps:
       - name: Determine new tag version from PR body
