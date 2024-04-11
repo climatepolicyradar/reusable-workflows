@@ -1,17 +1,56 @@
-name: Auto-Release
+name: Auto Git Tag & Release
 
 on:
   workflow_call:
-    inputs:
+    outputs:
       new_tag:
-        required: true
-        type: string
+        description: The next determined tag based on the last PR body
+        value: ${{ jobs.determine-next.outputs.new_tag }}
 
 jobs:
-  auto-release:
-    if: ${{ github.ref == 'refs/heads/main' }}
+  determine-next:
     runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' }}
 
+    outputs:
+      new_tag: ${{ steps.determine_next_tag.outputs.new_tag }}
+
+    steps:
+      - name: Determine new tag version
+        id: determine_next_tag
+        uses: climatepolicyradar/get-next-tag-from-pr-body@v2
+
+      - name: Next tag found?
+        run: |
+          if [[ -z "${{ steps.determine_next_tag.outputs.new_tag }}" ]]; then
+            exit 1;
+          fi
+
+  git:
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' && needs.determine-next.outputs.new_tag != 'Skip' }}
+    permissions:
+      contents: write
+    needs:
+      - determine-next
+    steps:
+      - uses: actions/checkout@v4
+      - uses: fregante/setup-git-user@v2
+
+      - name: Create Git tag and push
+        run: |
+          echo "Attempting to auto-tag merge commit"
+          new_tag=${{ needs.determine-next.outputs.new_tag }}
+          new_version_num=${new_tag#v}
+          git tag -a "${new_tag}" -m "Version ${new_version_num}"
+          git push --tags origin "${new_tag}"
+
+  release:
+    if: ${{ github.ref == 'refs/heads/main' && needs.determine-next.outputs.new_tag != 'Skip' }}
+    runs-on: ubuntu-latest
+    needs:
+      - determine-next
+      - git
     steps:
       - uses: actions/checkout@v4
 
@@ -22,4 +61,4 @@ jobs:
           generateReleaseNotes: true
           makeLatest: true
           prerelease: false
-          tag: ${{ inputs.new_tag }}
+          tag: ${{ needs.determine-next.outputs.new_tag }}
