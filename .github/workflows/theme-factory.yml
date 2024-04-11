@@ -116,12 +116,3 @@ jobs:
       repo-name: ${{ inputs.repo-name }}
       semver-tag: main-${GITHUB_SHA::8}
     secrets: inherit
-
-  release:
-    if: ${{ needs.tag.result == 'success' && needs.tag.outputs.new_tag != 'Skip' }}
-    needs: tag
-    permissions:
-      contents: write
-    uses: climatepolicyradar/reusable-workflows/.github/workflows/release.yml@v3
-    with:
-      new_tag: ${{ needs.tag.outputs.new_tag }}
