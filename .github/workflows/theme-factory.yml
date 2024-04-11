@@ -111,7 +111,7 @@ jobs:
     needs: build
     permissions:
       contents: write
-    uses: climatepolicyradar/reusable-workflows/.github/workflows/tag.yml@v3
+    uses: climatepolicyradar/reusable-workflows/.github/workflows/tag.yml@v6
     with:
       repo-name: ${{ inputs.repo-name }}
       semver-tag: main-${GITHUB_SHA::8}
