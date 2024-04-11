@@ -1,4 +1,4 @@
-name: Auto Git & Semver Tagging
+name: Semver Tagging
 
 on:
   workflow_call:
@@ -9,69 +9,49 @@ on:
       semver-tag:
         required: true
         type: string
+      new-version:
+        required: false
+        type: string
 
-    outputs:
-      new_tag:
-        description: The next determined tag based on the last PR body
-        value: ${{ jobs.determine-next.outputs.new_tag }}
-
-    secrets:
-      AWS_ACCESS_KEY_ID:
-        required: true
-      AWS_SECRET_ACCESS_KEY:
-        required: true
-      DOCKER_REGISTRY:
-        required: true
 
 jobs:
-  determine-next:
-    runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/main' }}
-
-    outputs:
-      new_tag: ${{ steps.determine_next_tag.outputs.new_tag }}
-
-    steps:
-      - name: Determine new tag version
-        id: determine_next_tag
-        uses: climatepolicyradar/get-next-tag-from-pr-body@v2
-
-      - name: Next tag found?
-        run: |
-          if [[ -z "${{ steps.determine_next_tag.outputs.new_tag }}" ]]; then
-            exit 1;
-          fi
-
   semver:
-    needs: determine-next
-    if: ${{ github.ref == 'refs/heads/main' && needs.determine-next.outputs.new_tag != 'Skip'}}
-    uses: climatepolicyradar/reusable-workflows/.github/workflows/semver.yml@v3
-    secrets: inherit
-    with:
-      repo-name: ${{ inputs.repo-name }}
-      semver-tag: ${{ inputs.semver-tag }}
-      new-version: ${{ needs.determine-next.outputs.new_tag }}
-
-  git:
     runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/main' && needs.determine-next.outputs.new_tag != 'Skip' }}
-    permissions:
-      contents: write
-    needs:
-      - determine-next
-      - semver
     steps:
       - uses: actions/checkout@v4
-      - uses: fregante/setup-git-user@v2
 
-      - name: Create Git tag and push
-        run: |
-          echo "Attempting to auto-tag merge commit"
-          new_tag=${{ needs.determine-next.outputs.new_tag }}
-          new_version_num=${new_tag#v}
-          if [ $(git tag -l "$new_version_num") ]; then
-            exit 0;
-          else
-            git tag -a "${new_tag}" -m "Version ${new_version_num}"
-            git push --tags origin "${new_tag}"
-          fi
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Retag latest SHA and push to ECR
+        if: "${{ inputs.new-version == '' }}"
+        id: retag_and_push_to_ecr
+        uses: climatepolicyradar/retag-and-push-to-ecr@v1
+        env:
+          DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        with:
+          repo-name: ${{ inputs.repo-name }}
+          semver-tag: ${{ inputs.semver-tag }}
+
+      - name: Retag latest SHA as new tag and push to ECR
+        if: "${{ inputs.new-version != '' }}"
+        id: retag_and_push_to_ecr_new_tag
+        uses: climatepolicyradar/retag-and-push-to-ecr@v1
+        env:
+          DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        with:
+          repo-name: ${{ inputs.repo-name }}
+          semver-tag: ${{ inputs.semver-tag }}
+          new-version: ${{ inputs.new-version }}
