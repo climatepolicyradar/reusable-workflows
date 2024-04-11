@@ -54,7 +54,7 @@ jobs:
 
   git:
     runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/main' && needs.determine-next.outputs.new_tag != 'Skip'}}
+    if: ${{ github.ref == 'refs/heads/main' && needs.determine-next.outputs.new_tag != 'Skip' }}
     permissions:
       contents: write
     needs:
@@ -69,5 +69,9 @@ jobs:
           echo "Attempting to auto-tag merge commit"
           new_tag=${{ needs.determine-next.outputs.new_tag }}
           new_version_num=${new_tag#v}
-          git tag -a "${new_tag}" -m "Version ${new_version_num}"
-          git push --tags origin "${new_tag}"
+          if [ $(git tag -l "$new_version_num") ]; then
+            exit 0;
+          else
+            git tag -a "${new_tag}" -m "Version ${new_version_num}"
+            git push --tags origin "${new_tag}"
+          fi
