@@ -1,7 +1,6 @@
 name: Python Precommit Validator
 
-on:
-  workflow_call
+on: workflow_call
 
 jobs:
   python:
@@ -29,11 +28,6 @@ jobs:
       - name: Export PYTHONPATH
         run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
 
-      - name: Trunk Check
-        uses: trunk-io/trunk-action@v1
-        with:
-          arguments: --ci
-
       - name: Check pyproject.toml package version matches
         uses: climatepolicyradar/check-pyproject-package-version@v3
 
@@ -47,3 +41,8 @@ jobs:
             exit 0
           fi
         shell: bash {0}
+
+      - name: Trunk Check
+        uses: trunk-io/trunk-action@v1
+        with:
+          arguments: --ci
