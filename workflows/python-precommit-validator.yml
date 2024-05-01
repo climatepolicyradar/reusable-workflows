@@ -35,7 +35,7 @@ jobs:
           arguments: --ci
 
       - name: Check pyproject.toml package version matches
-        uses: climatepolicyradar/check-pyproject-package-version@v2
+        uses: climatepolicyradar/check-pyproject-package-version@v3
 
       - name: Check code contains no FIXME's
         run: |
