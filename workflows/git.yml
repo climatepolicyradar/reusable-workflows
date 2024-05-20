@@ -18,7 +18,7 @@ jobs:
     steps:
       - name: Determine new tag version
         id: determine_next_tag
-        uses: climatepolicyradar/get-next-tag-from-pr-body@v2
+        uses: climatepolicyradar/get-next-tag-from-pr-body@v3
 
       - name: Next tag found?
         run: |
@@ -26,7 +26,7 @@ jobs:
             exit 1;
           fi
 
-  git:
+  tag:
     runs-on: ubuntu-latest
     if: ${{ github.ref == 'refs/heads/main' && needs.determine-next.outputs.new_tag != 'Skip' }}
     permissions:
@@ -48,9 +48,11 @@ jobs:
   release:
     if: ${{ github.ref == 'refs/heads/main' && needs.determine-next.outputs.new_tag != 'Skip' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     needs:
       - determine-next
-      - git
+      - tag
     steps:
       - uses: actions/checkout@v4
 
