@@ -78,4 +78,4 @@ jobs:
         with:
           repo-name: ${{ inputs.repo-name }}
           semver-tag: ${{ inputs.semver-tag }}
-          new-version: ${{ inputs.new-version }}
+          new-version: ${{ steps.determine_next_tag.outputs.new_tag }}
