@@ -1,4 +1,4 @@
-name: Auto-Semver Tagging
+name: Semver Tagging
 
 on:
   workflow_call:
@@ -11,6 +11,9 @@ on:
         type: string
       new-version:
         required: false
+        type: string
+      manual-semver:
+        required: true
         type: string
 
 
@@ -38,6 +41,18 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+      - name: Retag latest SHA and push to ECR
+        if: "${{ inputs.manual-semver == 'true' }}"
+        id: retag_and_push_to_ecr
+        uses: climatepolicyradar/retag-and-push-to-ecr@v1
+        env:
+          DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        with:
+          repo-name: ${{ inputs.repo-name }}
+          semver-tag: ${{ inputs.semver-tag }}
+
       - name: Retag latest SHA as merge commit with new tag and push to ECR
         if: "${{ inputs.new-version != '' && inputs.new-version != 'Skip' }}"
         id: retag_and_push_to_ecr_new_tag
@@ -52,7 +67,7 @@ jobs:
           new-version: ${{ inputs.new-version }}
 
       - name: Retag latest SHA as merge commit with determined tag and push to ECR
-        if: "${{ inputs.new-version == '' && steps.determine_next_tag.outputs.new_tag != '' && steps.determine_next_tag.outputs.new_tag != 'Skip' }}"
+        if: "${{ inputs.manual-semver != 'true' && steps.determine_next_tag.outputs.new_tag != '' && steps.determine_next_tag.outputs.new_tag != 'Skip' }}"
         id: retag_and_push_determined_tag_to_ecr
         uses: climatepolicyradar/retag-and-push-to-ecr@v1
         env:
