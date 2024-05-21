@@ -24,8 +24,6 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
       - name: Determine next tag
         id: determine_next_tag
         uses: climatepolicyradar/get-next-tag-from-pr-body@v3
