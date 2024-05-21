@@ -28,6 +28,8 @@ jobs:
         id: determine_next_tag
         uses: climatepolicyradar/get-next-tag-from-pr-body@v3
 
+      - run: echo ${{ steps.determine_next_tag.outputs.new_tag }}
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
