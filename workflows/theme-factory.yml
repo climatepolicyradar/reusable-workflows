@@ -93,7 +93,7 @@ jobs:
       semver-tag: main-${GITHUB_SHA::8}
 
   semver:
-    if: ${{ github.ref == 'refs/heads/main' && needs.build.result == 'success'}}
+    if: ${{ needs.build.result == 'success'}}
     needs: build
     permissions:
       contents: write
