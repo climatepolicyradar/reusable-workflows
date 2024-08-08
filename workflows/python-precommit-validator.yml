@@ -29,7 +29,7 @@ jobs:
         run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
 
       - name: Check pyproject.toml package version matches
-        uses: climatepolicyradar/check-pyproject-package-version@v3
+        uses: climatepolicyradar/check-pyproject-package-version@v4
 
       - name: Check code contains no FIXME's
         run: |
