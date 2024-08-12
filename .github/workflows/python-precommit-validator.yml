@@ -5,11 +5,6 @@ on: workflow_call
 jobs:
   python:
     runs-on: ubuntu-latest
-    permissions:
-      # For trunk to post annotations
-      checks: write
-      # For repo checkout
-      contents: read
     steps:
       - uses: actions/checkout@v4
 
