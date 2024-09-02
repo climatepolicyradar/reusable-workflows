@@ -1,4 +1,4 @@
-name: Python Precommit Validator - withouout version checks
+name: Python Precommit Validator - without version checks
 
 on:
   workflow_call:
