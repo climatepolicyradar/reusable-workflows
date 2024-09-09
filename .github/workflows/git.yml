@@ -29,6 +29,7 @@ jobs:
           if [[ -z "${{ steps.determine_next_tag.outputs.new_tag }}" ]]; then
             exit 1;
           fi
+          echo "new_tag=${{ steps.determine_next_tag.outputs.new_tag }}" >> "$GITHUB_OUTPUT"
 
   tag:
     runs-on: ubuntu-latest
