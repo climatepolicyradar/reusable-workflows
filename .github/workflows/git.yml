@@ -7,6 +7,10 @@ on:
         description: The next determined tag based on the last PR body
         value: ${{ jobs.determine-next.outputs.new_tag }}
 
+      upload_url:
+        description: The URL of the created release
+        value: ${{ jobs.release.outputs.upload_url }}
+
 jobs:
   determine-next:
     runs-on: ubuntu-latest
@@ -48,6 +52,8 @@ jobs:
   release:
     if: ${{ github.ref == 'refs/heads/main' && needs.determine-next.outputs.new_tag != 'Skip' }}
     runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create-release.outputs.upload_url }}
     permissions:
       contents: write
     needs:
@@ -57,6 +63,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Create Git release
+        id: create-release
         uses: ncipollo/release-action@v1.14.0
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
@@ -64,3 +71,5 @@ jobs:
           makeLatest: true
           prerelease: false
           tag: ${{ needs.determine-next.outputs.new_tag }}
+
+      - run: echo "upload_url=${{ steps.create-release.outputs.upload_url }}" >> "$GITHUB_OUTPUT"
