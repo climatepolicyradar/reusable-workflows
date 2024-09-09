@@ -5,11 +5,11 @@ on:
     inputs:
       python-version:
         required: false
-        default: "3.9"
+        default: "3.10"
         type: string
       poetry-version:
         required: false
-        default: 1.7.1
+        default: 1.8.3
         type: string
 
 jobs:
