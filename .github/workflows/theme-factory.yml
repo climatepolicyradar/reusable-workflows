@@ -71,7 +71,7 @@ jobs:
 
       - name: Login to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1.6.1
+        uses: aws-actions/amazon-ecr-login@v2
 
       - name: Publish initial image based on branch to ECR
         id: retag_and_push_to_ecr
@@ -105,7 +105,7 @@ jobs:
     steps:
       - name: Determine new tag version
         id: determine_next_tag
-        uses: climatepolicyradar/get-next-tag-from-pr-body@v3
+        uses: climatepolicyradar/get-next-tag-from-pr-body@v4
 
       - name: Next tag found?
         run: |
