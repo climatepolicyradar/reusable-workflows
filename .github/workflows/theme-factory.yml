@@ -17,37 +17,6 @@ on:
 
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Build
-        run: |
-          export THEME=${{ inputs.theme }}
-          make build
-
-      - name: Run frontend TODO - use own backend?
-        run: |
-          export THEME=${{ inputs.theme }}
-          make run_ci
-
-      - name: Wait for max 10 seconds until frontend responds
-        run: timeout 10 sh -c 'until curl http://$0:$1 ; do sleep 1; done' localhost 3000
-
-      - name: Build e2e tests
-        run: |
-          cd e2e
-          docker build --build-arg THEME=${{ inputs.theme }} -t cypress/unprivileged .
-
-      - name: Run e2e tests
-        run: |
-          cd e2e
-          docker run --net=host -u node cypress/unprivileged
-
-      - name: Run Integration Tests
-        run: echo TODO-TODO-TODO-TODO-TODO-TODO-TODO-TODO-TODO-TODO-TODO-TODO
-
   build:
     if: |
       needs.test.result == 'success' && ! startsWith(github.ref, 'refs/tags')
