@@ -1,0 +1,34 @@
+name: Maximise GHA Runner Disk Space
+
+on:
+  workflow_call:
+    inputs:
+      # This is a "works for now" step. The underlying runner may
+      # change. Don't block CD on this.
+      continue-on-error:
+        description: Whether to continue on error
+        type: boolean
+        default: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove unused software
+        continue-on-error: ${{ inputs.continue-on-error }}
+        run: |
+          # Space before
+          df -h
+          # .Net
+          sudo rm -rf /usr/share/dotnet || true &
+          # Android
+          sudo rm -rf /usr/local/lib/android || true &
+          # GHC
+          sudo rm -rf /opt/ghc || true &
+          sudo rm -rf /usr/local/.ghcup || true &
+          # CodeQL
+          sudo rm -rf /opt/hostedtoolcache/CodeQL || true &
+          # Wait for all removals
+          wait
+          # Space after
+          df -h
