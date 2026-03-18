@@ -2,6 +2,12 @@ name: Dependabot Auto-pilot
 
 on:
   workflow_call:
+    inputs:
+      auto-approve:
+        description: Auto-approve Dependabot PRs (except semver-major)
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   dependabot:
@@ -19,6 +25,7 @@ jobs:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
 
       - name: Approve the PR
+        if: ${{ inputs.auto-approve || steps.metadata.outputs.update-type != 'version-update:semver-major' }}
         run: gh pr review --approve "$PR_URL"
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
